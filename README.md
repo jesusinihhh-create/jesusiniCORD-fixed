@@ -11,6 +11,11 @@ Chat web propio inspirado en las aplicaciones de comunidades: canales, mensajes 
 - Canales `general`, `memes`, `gaming` y `music`.
 - El primer usuario registrado (ID 1) puede crear canales.
 - Diseño adaptable para PC y móvil.
+- Perfiles con avatar GIF, banner, biografía, estado y color personalizable.
+- Solicitudes de amistad y aceptación de solicitudes.
+- Mensajes privados entre amigos.
+- Reacciones rápidas en mensajes (👍 ❤️ 😂 🔥).
+- Creación de servidores comunitarios y roles básicos asignados por su dueño.
 
 ## Ejecutar en tu PC
 Necesitas Node.js 22 (el proyecto incluye `.node-version` para fijar esta versión en Render).
@@ -36,7 +41,8 @@ El archivo `render.yaml` configura un disco persistente en `/var/data` para guar
 - El primer usuario registrado se convierte en administrador y puede crear canales.
 - Usa contraseñas únicas y difíciles de adivinar.
 - Configura `JWT_SECRET` como una cadena larga y aleatoria si ejecutas fuera de Render.
-- Esta es una primera versión funcional. Todavía no incluye llamadas de voz/vídeo, mensajes privados, subida de archivos, moderación avanzada ni recuperación de contraseña.
+- Los mensajes privados y servidores son una primera implementación básica; los MD se abren desde la lista de amigos mediante un cuadro de diálogo. Los servidores todavía no tienen canales propios ni invitaciones con enlace.
+- Todavía no incluye llamadas de voz/vídeo, subida de archivos, moderación avanzada, permisos granulares, ni recuperación de contraseña. No se puede considerar un reemplazo completo de Discord todavía.
 - Para una comunidad pública grande, añade límites de registro, moderación, reportes y copias de seguridad.
 
 ## Estructura

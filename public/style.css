@@ -34,3 +34,21 @@ input{width:100%;background:#121521;border:1px solid #383d54;color:#fff;border-r
 .toast{position:fixed;bottom:25px;left:50%;transform:translate(-50%,20px);opacity:0;background:#32364c;color:#fff;padding:11px 16px;border-radius:9px;font-size:12px;transition:.2s;pointer-events:none;box-shadow:0 8px 30px #0005}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:1050px){.app{grid-template-columns:66px 235px minmax(280px,1fr)}.members-panel{display:none}}
 @media(max-width:650px){.app{grid-template-columns:56px minmax(0,1fr)}.sidebar{display:none}.server-rail{grid-column:1}.chat-panel{grid-column:2}.chat-header{padding:0 14px}.messages{padding:18px 14px}.composer-wrap{padding:10px 12px 14px}.channel-topic,.secure-label{display:none}}
+
+/* Free profile customization */
+:root{--profile-accent:#7778ff}
+.user-avatar,.rail-user,.message-avatar,.member-avatar,.profile-preview-avatar{overflow:hidden;flex:none}
+.user-avatar img,.rail-user img,.message-avatar img,.member-avatar img,.profile-preview-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:inherit}
+.message-name{color:var(--profile-accent)}
+textarea{font:inherit;color:#fff}
+.modal{position:fixed;inset:0;z-index:20;background:#080a12c9;display:grid;place-items:center;padding:18px;overflow:auto}
+.profile-card{width:min(510px,100%);max-height:94vh;overflow:auto;background:#1b1e2b;border:1px solid #3b4058;border-radius:17px;padding:22px;box-shadow:0 25px 100px #000a}
+.profile-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
+.profile-modal-head h2{font-size:20px;margin:0 0 5px}.profile-modal-head p{font-size:12px;color:#9da3bd;margin:0}
+.profile-preview-banner{height:112px;border-radius:11px;background:linear-gradient(120deg,#555ee7,#1c2b58);background-size:cover;background-position:center;position:relative;margin-bottom:43px}
+.profile-preview-avatar{position:absolute;left:17px;bottom:-32px;width:70px;height:70px;border:5px solid #1b1e2b;border-radius:50%;display:grid;place-items:center;background:#5055e9;font-weight:800}
+.profile-card label{margin-top:13px}.profile-card input:not(.color-input),.profile-card textarea{width:100%;background:#121521;border:1px solid #383d54;color:#fff;border-radius:9px;padding:11px;outline:none;font-size:13px}
+.profile-card textarea{resize:vertical}.color-input{width:54px;height:36px;padding:3px;background:#121521;border:1px solid #383d54;border-radius:8px}
+.profile-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.secondary{background:#30354a;color:#e5e7f4;border:0;border-radius:9px;padding:11px 16px}.profile-actions .primary{margin:0;padding:11px 16px}.profile-hint{font-size:10px;color:#858ba8;line-height:1.5;margin:13px 0 0}
+
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:10px 12px}.quick-actions button{background:#292d40;border:1px solid #383d55;color:#cbd0e8;border-radius:7px;padding:8px 5px;font-size:10px}.quick-actions button:hover{background:#3b4070;color:#fff}.friends-title{font-size:10px!important;color:#8f95b1!important;margin:22px 0 10px!important}.friend-entry{width:100%;text-align:left;border:0;background:#292d40;color:#dce0f1;border-radius:7px;padding:8px;margin:3px 0;font-size:11px}.message-tools{display:flex;gap:5px;margin-top:6px}.reaction{border:1px solid #444a66;background:#292e43;color:#e4e6f4;border-radius:12px;padding:3px 8px;font-size:11px}.reaction.active{background:#5055a5;border-color:#858aff}
