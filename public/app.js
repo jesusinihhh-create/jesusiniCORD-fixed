@@ -4,6 +4,8 @@ let currentUser = null;
 let channels = [];
 let currentChannelId = null;
 let socket = null;
+let loadedAppVersion = null;
+let updateCheckTimer = null;
 
 function toast(message) {
   const el = $("toast");
@@ -11,6 +13,58 @@ function toast(message) {
   el.classList.add("show");
   setTimeout(() => el.classList.remove("show"), 2600);
 }
+
+function showConnectionNotice(message, connected = false) {
+  const notice = $("connectionNotice");
+  if (!notice) return;
+  notice.textContent = message;
+  notice.classList.toggle("connected", connected);
+  notice.classList.remove("hidden");
+  const statusText = connected ? "● Conectado" : (message.startsWith("Sin conexión") ? "● Offline" : "● Reconectando");
+  const secureLabel = document.querySelector(".secure-label");
+  const onlineDot = document.querySelector(".online-dot");
+  if (secureLabel) secureLabel.textContent = statusText;
+  if (onlineDot) onlineDot.textContent = statusText;
+  if (connected) setTimeout(() => notice.classList.add("hidden"), 2200);
+}
+
+async function checkForUpdates() {
+  try {
+    const response = await fetch(`/api/version?_=${Date.now()}`, {
+      cache: "no-store",
+      credentials: "same-origin"
+    });
+    if (!response.ok) throw new Error("Servidor no disponible");
+    const info = await response.json();
+    if (!loadedAppVersion) {
+      loadedAppVersion = info.version;
+      return;
+    }
+    if (info.version && info.version !== loadedAppVersion) {
+      $("updateMessage").textContent = `¡jesusiniCORD ${info.version} está disponible! Actualiza para aplicar los cambios.`;
+      $("updateNotice").classList.remove("hidden");
+    }
+  } catch {
+    // A short outage during a Render deploy is normal; the connection notice handles it.
+  }
+}
+
+function startUpdateChecks() {
+  checkForUpdates();
+  if (updateCheckTimer) clearInterval(updateCheckTimer);
+  updateCheckTimer = setInterval(checkForUpdates, 45000);
+}
+
+$("applyUpdate")?.addEventListener("click", () => location.reload());
+$("dismissUpdate")?.addEventListener("click", () => $("updateNotice").classList.add("hidden"));
+window.addEventListener("online", () => {
+  showConnectionNotice("Internet recuperado. Reconectando...", false);
+  checkForUpdates();
+});
+window.addEventListener("offline", () => showConnectionNotice("Sin conexión a Internet. Comprueba tu red.", false));
+window.addEventListener("pagehide", () => {
+  if (socket) socket.disconnect();
+});
 async function api(url, options = {}) {
   const response = await fetch(url, {
     credentials: "same-origin",
@@ -153,8 +207,17 @@ function appendMessage(message) {
 function connectSocket() {
   if (socket) socket.disconnect();
   socket = io();
-  socket.on("connect", () => { if (currentChannelId) socket.emit("channel:join", currentChannelId); });
-  socket.on("connect_error", () => toast("Se perdió la conexión. Recarga la página para volver a entrar."));
+  socket.on("connect", () => {
+    if (currentChannelId) socket.emit("channel:join", currentChannelId);
+    showConnectionNotice("Conexión restablecida. ¡Ya estás en línea!", true);
+  });
+  socket.on("disconnect", (reason) => {
+    if (reason !== "io client disconnect") showConnectionNotice("Conexión perdida. Intentando reconectar automáticamente...", false);
+  });
+  socket.on("connect_error", () => showConnectionNotice("No se pudo conectar con el servidor. Reintentando...", false));
+  socket.on("server:shutdown", (info) => {
+    showConnectionNotice(info?.message || "El servidor se está reiniciando. Volveremos a conectar automáticamente.", false);
+  });
   socket.on("message:new", message => {
     if (message.channelId === currentChannelId) appendMessage(message);
   });
@@ -233,6 +296,8 @@ $("profileForm").addEventListener("submit", async event => {
   } catch (err) { toast(err.message); }
 });
 $("profileModal").addEventListener("click", event => { if (event.target === $("profileModal")) closeProfile(); });
+
+startUpdateChecks();
 
 (async function boot() {
   try {

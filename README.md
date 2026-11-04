@@ -16,6 +16,18 @@ Chat web propio inspirado en las aplicaciones de comunidades: canales, mensajes 
 - Mensajes privados entre amigos.
 - Reacciones rápidas en mensajes (👍 ❤️ 😂 🔥).
 - Creación de servidores comunitarios y roles básicos asignados por su dueño.
+- Estado de conexión en tiempo real y reconexión automática si se pierde Internet o el servidor se reinicia.
+- Aviso de mantenimiento cuando el servidor se apaga de forma controlada.
+- Comprobación automática de nuevas versiones cada 45 segundos y botón para recargar y aplicar la actualización.
+- Endpoint `/api/version` para consultar la versión activa.
+
+## Novedades de la versión 1.2.0
+- Se agregó un aviso visible al desconectarse y al recuperar la conexión.
+- Socket.IO intenta reconectar automáticamente; al cerrar la pestaña, el socket se desconecta y el usuario deja de aparecer en línea cuando ya no tiene otras pestañas conectadas.
+- Render/SIGTERM y el cierre manual envían un aviso de reinicio y cierran las conexiones de forma controlada.
+- La app consulta la versión del servidor y avisa si hay una actualización nueva. El usuario puede pulsar **Actualizar ahora**.
+
+Para publicar una actualización, sube los cambios a GitHub y deja que Render despliegue la nueva versión. Incrementa `version` en `package.json` en cada publicación para que los clientes detecten el cambio.
 
 ## Ejecutar en tu PC
 Necesitas Node.js 22 (el proyecto incluye `.node-version` para fijar esta versión en Render).

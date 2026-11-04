@@ -100,6 +100,12 @@
       <p class="profile-hint">Consejo: usa enlaces directos HTTPS a imágenes GIF, PNG o JPG. No subas contraseñas ni datos privados.</p>
     </form>
   </section>
+  <div id="connectionNotice" class="connection-notice hidden" role="status" aria-live="polite"></div>
+  <div id="updateNotice" class="update-notice hidden" role="status" aria-live="polite">
+    <span id="updateMessage">Hay una nueva versión de jesusiniCORD.</span>
+    <button id="applyUpdate" type="button">Actualizar ahora</button>
+    <button id="dismissUpdate" type="button" aria-label="Cerrar aviso">×</button>
+  </div>
   <div id="toast" class="toast"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/app.js"></script>

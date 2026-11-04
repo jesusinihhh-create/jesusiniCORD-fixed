@@ -8,6 +8,7 @@ const cookie = require("cookie");
 const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3000;
+const APP_VERSION = require("./package.json").version;
 const JWT_SECRET = process.env.JWT_SECRET || "change-this-secret-before-production";
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, "jesusinicord.sqlite");
 
@@ -104,7 +105,11 @@ function validUsername(value) {
   return typeof value === "string" && /^[a-zA-Z0-9_]{3,20}$/.test(value);
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, app: "jesusiniCORD" }));
+app.get("/health", (_req, res) => res.json({ ok: true, app: "jesusiniCORD", version: APP_VERSION }));
+app.get("/api/version", (_req, res) => {
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.json({ app: "jesusiniCORD", version: APP_VERSION, status: "online" });
+});
 // Friends, private messages, reactions and community servers.
 app.get("/api/users/search", requireAuth, (req, res) => {
   const q = String(req.query.q || "").trim().slice(0, 20);
@@ -340,6 +345,24 @@ io.on("connection", (socket) => {
 
 app.get("*", (_req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
+let shuttingDown = false;
+function gracefulShutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`${signal} received. Closing jesusiniCORD gracefully...`);
+  io.emit("server:shutdown", { message: "El servidor se está reiniciando para aplicar una actualización." });
+  setTimeout(() => {
+    io.close(() => {
+      try { db.close(); } catch (error) { console.error("Database close error:", error); }
+      if (server.listening) server.close(() => process.exit(0));
+      else process.exit(0);
+    });
+  }, 350);
+  setTimeout(() => process.exit(1), 10000).unref();
+}
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`jesusiniCORD listening on ${PORT}; database: ${DB_PATH}`);
+  console.log(`jesusiniCORD v${APP_VERSION} listening on ${PORT}; database: ${DB_PATH}`);
 });
