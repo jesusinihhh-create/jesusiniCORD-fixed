@@ -52,3 +52,13 @@ textarea{font:inherit;color:#fff}
 .profile-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.secondary{background:#30354a;color:#e5e7f4;border:0;border-radius:9px;padding:11px 16px}.profile-actions .primary{margin:0;padding:11px 16px}.profile-hint{font-size:10px;color:#858ba8;line-height:1.5;margin:13px 0 0}
 
 .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:10px 12px}.quick-actions button{background:#292d40;border:1px solid #383d55;color:#cbd0e8;border-radius:7px;padding:8px 5px;font-size:10px}.quick-actions button:hover{background:#3b4070;color:#fff}.friends-title{font-size:10px!important;color:#8f95b1!important;margin:22px 0 10px!important}.friend-entry{width:100%;text-align:left;border:0;background:#292d40;color:#dce0f1;border-radius:7px;padding:8px;margin:3px 0;font-size:11px}.message-tools{display:flex;gap:5px;margin-top:6px}.reaction{border:1px solid #444a66;background:#292e43;color:#e4e6f4;border-radius:12px;padding:3px 8px;font-size:11px}.reaction.active{background:#5055a5;border-color:#858aff}
+
+/* Connection and update notices */
+.connection-notice,.update-notice{position:fixed;z-index:50;left:50%;transform:translateX(-50%);width:min(680px,calc(100% - 28px));padding:12px 16px;border-radius:11px;box-shadow:0 12px 38px #0008;font-size:13px;text-align:center}
+.connection-notice{top:14px;background:#3b3040;border:1px solid #8c6073;color:#ffe2e8}
+.connection-notice.connected{background:#203d35;border-color:#4c9b7d;color:#d9ffec}
+.update-notice{top:14px;background:#292d50;border:1px solid #7778ff;color:#f0f0ff;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.update-notice button{border:0;border-radius:7px;padding:8px 12px;background:#7778ff;color:white;font-weight:700}
+.update-notice button:last-child{background:transparent;color:#d8d9ef;font-size:19px;padding:2px 7px}
+.connection-notice:not(.hidden)+.update-notice{top:78px}
+@media(max-width:650px){.connection-notice,.update-notice{font-size:11px;padding:10px}.update-notice{gap:7px}}
