@@ -22,6 +22,32 @@ async function api(url, options = {}) {
   return data;
 }
 function initials(name) { return (name || "?").slice(0, 2).toUpperCase(); }
+function paintAvatar(element, url, username) {
+  element.replaceChildren();
+  if (url) {
+    const image = document.createElement("img"); image.src = url; image.alt = `Avatar de ${username}`;
+    image.onerror = () => { element.textContent = initials(username); };
+    element.append(image);
+  } else element.textContent = initials(username);
+}
+function openProfile() {
+  $("profileAvatar").value = currentUser.avatarUrl || "";
+  $("profileBanner").value = currentUser.bannerUrl || "";
+  $("profileBio").value = currentUser.bio || "";
+  $("profileStatus").value = currentUser.status || "En línea";
+  $("profileAccent").value = currentUser.accent || "#7778ff";
+  updateProfilePreview();
+  $("profileModal").classList.remove("hidden");
+}
+function updateProfilePreview() {
+  const avatar = $("profileAvatar").value.trim();
+  const banner = $("profileBanner").value.trim();
+  const preview = $("profilePreviewAvatar");
+  paintAvatar(preview, avatar, currentUser.username);
+  $("profilePreviewBanner").style.backgroundImage = banner ? `linear-gradient(#0003,#0003),url("${banner.replace(/["\\]/g, "")}")` : "linear-gradient(120deg,#555ee7,#1c2b58)";
+}
+function closeProfile() { $("profileModal").classList.add("hidden"); }
+
 function setMode(next) {
   mode = next;
   document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
@@ -52,10 +78,13 @@ async function enterApp(user, isAdmin) {
   $("authView").classList.add("hidden");
   $("appView").classList.remove("hidden");
   $("myName").textContent = user.username;
-  $("myAvatar").textContent = initials(user.username);
-  $("railAvatar").textContent = initials(user.username);
+  paintAvatar($("myAvatar"), user.avatarUrl, user.username);
+  paintAvatar($("railAvatar"), user.avatarUrl, user.username);
+  document.documentElement.style.setProperty("--profile-accent", user.accent || "#7778ff");
+  $("myName").title = user.status || "En línea";
   $("addChannel").classList.toggle("hidden", !isAdmin);
   await loadChannels();
+  await refreshSocial();
   connectSocket();
 }
 async function loadChannels() {
@@ -108,7 +137,7 @@ function renderMessages(messages) {
 function appendMessage(message) {
   const container = $("messages");
   const row = document.createElement("article"); row.className = "message";
-  const avatar = document.createElement("div"); avatar.className = "message-avatar"; avatar.textContent = initials(message.username);
+  const avatar = document.createElement("div"); avatar.className = "message-avatar"; paintAvatar(avatar, message.avatarUrl, message.username);
   const body = document.createElement("div"); body.className = "message-body";
   const top = document.createElement("div"); top.className = "message-top";
   const name = document.createElement("span"); name.className = "message-name"; name.textContent = message.username;
@@ -116,7 +145,9 @@ function appendMessage(message) {
   const date = new Date(message.createdAt);
   time.textContent = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const content = document.createElement("div"); content.className = "message-content"; content.textContent = message.content;
-  top.append(name, time); body.append(top, content); row.append(avatar, body); container.append(row);
+  const tools=document.createElement("div");tools.className="message-tools";
+  ["👍","❤️","😂","🔥"].forEach(emoji=>{const b=document.createElement("button");b.className="reaction";b.textContent=emoji;b.title="Reaccionar";b.addEventListener("click",async()=>{try{await api(`/api/messages/${message.id}/reactions`,{method:"POST",body:JSON.stringify({emoji})});b.classList.toggle("active")}catch(e){toast(e.message)}});tools.append(b)});
+  top.append(name, time); body.append(top, content, tools); row.append(avatar, body); container.append(row);
   container.scrollTop = container.scrollHeight;
 }
 function connectSocket() {
@@ -137,7 +168,7 @@ function connectSocket() {
     const list = $("memberList"); list.replaceChildren();
     users.sort((a,b) => a.username.localeCompare(b.username)).forEach(user => {
       const row = document.createElement("div"); row.className = "member";
-      const avatar = document.createElement("div"); avatar.className = "member-avatar"; avatar.textContent = initials(user.username);
+      const avatar = document.createElement("div"); avatar.className = "member-avatar"; paintAvatar(avatar, user.avatarUrl, user.username);
       const name = document.createElement("span"); name.textContent = user.username;
       const dot = document.createElement("span"); dot.className = "member-dot";
       row.append(avatar, name, dot); list.append(row);
@@ -172,7 +203,36 @@ $("addChannel").addEventListener("click", async () => {
     renderChannels(); await selectChannel(channel.id);
   } catch (err) { toast(err.message); }
 });
-$("railAdd").addEventListener("click", () => toast("¡Próximamente: más servidores!"));
+async function refreshSocial(){try{const [friends,servers]=await Promise.all([api("/api/friends"),api("/api/servers")]);const fl=$("friendsList");fl.replaceChildren();friends.forEach(f=>{const b=document.createElement("button");b.className="friend-entry";b.textContent=(f.status==="pending"?(f.direction==="received"?"📨 ":"⏳ "):"● ")+f.username;b.addEventListener("click",async()=>{if(f.status==="pending"&&f.direction==="received"){try{await api(`/api/friends/${f.id}/accept`,{method:"POST"});toast("Solicitud aceptada");refreshSocial()}catch(e){toast(e.message)}}else if(f.status==="accepted")openDM(f.userId,f.username)});fl.append(b)});const sl=$("serverList");sl.replaceChildren();servers.forEach(s=>{const d=document.createElement("div");d.className="friend-entry";d.textContent=`✦ ${s.name} · ${s.role}`;sl.append(d)})}catch(e){console.error(e)}}
+async function openDM(id,username){try{const msgs=await api(`/api/dm/${id}`);const transcript=msgs.map(m=>`${m.username}: ${m.content}`).join("\n")||"(Sin mensajes)";const content=prompt(`MD con ${username}\n\n${transcript}\n\nEscribe un mensaje nuevo:`);if(content?.trim()){await api(`/api/dm/${id}`,{method:"POST",body:JSON.stringify({content})});toast("Mensaje privado enviado")}}catch(e){toast(e.message)}}
+$("addFriend").addEventListener("click",async()=>{const username=prompt("Nombre exacto del usuario:");if(!username)return;try{await api("/api/friends/request",{method:"POST",body:JSON.stringify({username})});toast("Solicitud enviada");refreshSocial()}catch(e){toast(e.message)}});
+$("openFriends").addEventListener("click",()=>{refreshSocial();toast("Selecciona un amigo de la lista para abrir un MD")});
+$("createServer").addEventListener("click",async()=>{const name=prompt("Nombre del servidor:");if(!name)return;try{const s=await api("/api/servers",{method:"POST",body:JSON.stringify({name})});toast(`Servidor ${s.name} creado`);refreshSocial()}catch(e){toast(e.message)}});
+$("manageRole").addEventListener("click",async()=>{const servers=await api("/api/servers");const owned=servers.find(s=>s.role==="Owner");if(!owned)return toast("Primero crea un servidor.");const username=prompt("Usuario:");if(!username)return;const role=prompt("Rol (Admin, Moderador, VIP, Member):","Member");if(!role)return;try{await api(`/api/servers/${owned.id}/roles`,{method:"POST",body:JSON.stringify({username,role})});toast("Rol actualizado")}catch(e){toast(e.message)}});
+$("railAdd").addEventListener("click",()=>$("createServer").click());
+
+$("editProfile").addEventListener("click", openProfile);
+$("closeProfile").addEventListener("click", closeProfile);
+$("cancelProfile").addEventListener("click", closeProfile);
+$("profileAvatar").addEventListener("input", updateProfilePreview);
+$("profileBanner").addEventListener("input", updateProfilePreview);
+$("profileForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const payload = {
+    avatarUrl: $("profileAvatar").value.trim(), bannerUrl: $("profileBanner").value.trim(),
+    bio: $("profileBio").value, status: $("profileStatus").value, accent: $("profileAccent").value
+  };
+  try {
+    const data = await api("/api/profile", { method: "PUT", body: JSON.stringify(payload) });
+    currentUser = data.user;
+    paintAvatar($("myAvatar"), currentUser.avatarUrl, currentUser.username);
+    paintAvatar($("railAvatar"), currentUser.avatarUrl, currentUser.username);
+    document.documentElement.style.setProperty("--profile-accent", currentUser.accent);
+    $("myName").title = currentUser.status;
+    closeProfile(); toast("¡Perfil actualizado!");
+  } catch (err) { toast(err.message); }
+});
+$("profileModal").addEventListener("click", event => { if (event.target === $("profileModal")) closeProfile(); });
 
 (async function boot() {
   try {

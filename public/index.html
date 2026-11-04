@@ -50,12 +50,13 @@
         <span>FREE CHAT • EST. 2026</span>
       </div>
       <div class="server-description">¡Bienvenido a jesusiniCORD! 💙<br>Un chat gratuito para hablar con amigos.</div>
+      <div class="quick-actions"><button id="addFriend">＋ Añadir amigo</button><button id="openFriends">☻ Amigos / MD</button><button id="createServer">✦ Crear servidor</button><button id="manageRole">♜ Gestionar rol</button></div>
       <div class="section-heading">CANALES DE TEXTO <button id="addChannel" class="tiny-button hidden" title="Crear canal">＋</button></div>
       <nav id="channelList" class="channel-list"></nav>
       <div class="sidebar-bottom">
         <div class="user-avatar" id="myAvatar">?</div>
         <div class="user-meta"><strong id="myName">Usuario</strong><span>En línea</span></div>
-        <button id="logout" class="icon-button" title="Cerrar sesión">⇥</button>
+        <button id="editProfile" class="icon-button" title="Editar perfil">⚙</button><button id="logout" class="icon-button" title="Cerrar sesión">⇥</button>
       </div>
     </aside>
 
@@ -82,10 +83,23 @@
 
     <aside class="members-panel">
       <h3>Miembros en línea <span id="onlineCount">0</span></h3>
-      <div id="memberList"></div>
+      <div id="memberList"></div><h3 class="friends-title">Amigos</h3><div id="friendsList"></div><h3 class="friends-title">Mis servidores</h3><div id="serverList"></div>
       <div class="members-note">La lista muestra usuarios conectados ahora.</div>
     </aside>
   </main>
+  <section id="profileModal" class="modal hidden" aria-modal="true" role="dialog">
+    <form id="profileForm" class="profile-card">
+      <div class="profile-modal-head"><div><h2>Personalizar perfil</h2><p>Tu perfil, tus reglas. Todas las opciones son gratis.</p></div><button type="button" id="closeProfile" class="icon-button">✕</button></div>
+      <div class="profile-preview-banner" id="profilePreviewBanner"><div id="profilePreviewAvatar" class="profile-preview-avatar">?</div></div>
+      <label>URL del avatar (¡puede ser GIF animado!)</label><input id="profileAvatar" type="url" placeholder="https://ejemplo.com/avatar.gif">
+      <label>URL del banner</label><input id="profileBanner" type="url" placeholder="https://ejemplo.com/banner.gif">
+      <label>Sobre mí</label><textarea id="profileBio" maxlength="190" rows="3" placeholder="Cuéntale algo a la gente..."></textarea>
+      <label>Estado personalizado</label><input id="profileStatus" maxlength="32" placeholder="Jugando Geometry Dash...">
+      <label>Color de perfil</label><input id="profileAccent" type="color" value="#7778ff" class="color-input">
+      <div class="profile-actions"><button type="button" id="cancelProfile" class="secondary">Cancelar</button><button class="primary" type="submit">Guardar perfil</button></div>
+      <p class="profile-hint">Consejo: usa enlaces directos HTTPS a imágenes GIF, PNG o JPG. No subas contraseñas ni datos privados.</p>
+    </form>
+  </section>
   <div id="toast" class="toast"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/app.js"></script>
