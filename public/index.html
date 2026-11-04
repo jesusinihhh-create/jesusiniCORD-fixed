@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171923">
+  <title>jesusiniCORD</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="authView" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand-mark">jc</div>
+      <h1>jesusini<span>CORD</span></h1>
+      <p class="muted">Tu lugar para hablar. Gratis y hecho por la comunidad.</p>
+      <div class="auth-tabs">
+        <button class="tab active" data-mode="login">Iniciar sesión</button>
+        <button class="tab" data-mode="register">Crear cuenta</button>
+      </div>
+      <form id="authForm">
+        <label>Usuario</label>
+        <input id="username" autocomplete="username" minlength="3" maxlength="20" placeholder="TuNombre" required>
+        <label>Contraseña</label>
+        <input id="password" type="password" autocomplete="current-password" minlength="8" maxlength="72" placeholder="Mínimo 8 caracteres" required>
+        <button class="primary full" type="submit" id="authSubmit">Entrar</button>
+      </form>
+      <p id="authError" class="error"></p>
+      <small>Al registrarte aceptas usar jesusiniCORD de forma respetuosa.</small>
+    </div>
+  </div>
+
+  <main id="appView" class="app hidden">
+    <aside class="server-rail">
+      <div class="app-icon">jc</div>
+      <div class="rail-line"></div>
+      <button class="rail-button selected" title="jesusiniCORD">✦</button>
+      <button class="rail-button" title="Añadir servidor" id="railAdd">＋</button>
+      <div class="rail-spacer"></div>
+      <div class="rail-user" id="railAvatar">?</div>
+    </aside>
+
+    <aside class="sidebar">
+      <header class="server-header">
+        <div><strong>jesusiniCORD</strong><span class="online-dot">● Online</span></div>
+        <span>⌄</span>
+      </header>
+      <div class="server-banner">
+        <div class="banner-glow">jesusiniCORD</div>
+        <span>FREE CHAT • EST. 2026</span>
+      </div>
+      <div class="server-description">¡Bienvenido a jesusiniCORD! 💙<br>Un chat gratuito para hablar con amigos.</div>
+      <div class="section-heading">CANALES DE TEXTO <button id="addChannel" class="tiny-button hidden" title="Crear canal">＋</button></div>
+      <nav id="channelList" class="channel-list"></nav>
+      <div class="sidebar-bottom">
+        <div class="user-avatar" id="myAvatar">?</div>
+        <div class="user-meta"><strong id="myName">Usuario</strong><span>En línea</span></div>
+        <button id="logout" class="icon-button" title="Cerrar sesión">⇥</button>
+      </div>
+    </aside>
+
+    <section class="chat-panel">
+      <header class="chat-header">
+        <div class="channel-title"><span>#</span><strong id="currentChannel">general</strong></div>
+        <div class="channel-topic" id="channelTopic">Chat with everyone!</div>
+        <div class="header-actions"><span class="secure-label">● Conectado</span></div>
+      </header>
+      <div id="messages" class="messages">
+        <div class="welcome">
+          <div class="welcome-logo">jc</div>
+          <h2>¡Bienvenido a #general!</h2>
+          <p>Este es el comienzo de este canal. ¡Di hola! 👋</p>
+        </div>
+      </div>
+      <div class="composer-wrap">
+        <form id="messageForm" class="composer">
+          <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Mensaje #general..." autocomplete="off"></textarea>
+          <div class="composer-bottom"><span>Enter para enviar · Shift + Enter para nueva línea</span><button class="send-button" type="submit" aria-label="Enviar">➤</button></div>
+        </form>
+      </div>
+    </section>
+
+    <aside class="members-panel">
+      <h3>Miembros en línea <span id="onlineCount">0</span></h3>
+      <div id="memberList"></div>
+      <div class="members-note">La lista muestra usuarios conectados ahora.</div>
+    </aside>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "jesusinicord",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Free self-hosted chat app with SQLite and realtime messaging",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "cookie": "^0.7.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1"
+  }
+}

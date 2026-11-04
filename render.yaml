@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: jesusinicord
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_PATH
+        value: /var/data/jesusinicord.sqlite
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: jesusinicord-data
+      mountPath: /var/data
+      sizeGB: 1
